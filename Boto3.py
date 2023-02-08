@@ -2,19 +2,12 @@
 
 import boto3
 
-# Create an S3 client
-s3 = boto3.client('s3')
+s3 = boto3.client("s3")
+result = s3.list_buckets()
 
-# List all the S3 buckets
-response = s3.list_buckets()
-
-# Get the list of bucket names
-buckets = [bucket['Name'] for bucket in response['Buckets']]
-
-# Print the list of bucket names
-print("Bucket names:")
-for bucket in buckets:
-    print(bucket)
-
-
-#############################################################
+for bucket in result["Buckets"]:
+    name = bucket["Name"]
+    size = 0
+    for key in s3.list_objects(Bucket=name)["Contents"]:
+        size += key["Size"]
+    print(f"Bucket: {name} - Size: {size/(1024**3):.2f} GB")
